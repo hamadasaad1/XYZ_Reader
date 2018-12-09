@@ -32,4 +32,12 @@
     <color name="description">#1a1a1a</color>
     <color name="chef">#777</color>
     <color name="timestamp">#777</color>
+
+    <color name="colorFontGreyDark">#333333</color>
+    <color name="colorFontGreyLight">#666666</color>
+    <color name="colorLine">#dfdfdf</color>
+    <color name="colorFontGreen">#388e3c</color>
+    <color name="colorFontRed">#F96650</color>
+
+    <color name="shimmer_color_for_image">#55efefef</color>
 </resources>

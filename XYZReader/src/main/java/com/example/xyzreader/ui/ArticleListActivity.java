@@ -61,6 +61,7 @@ public class ArticleListActivity extends ActionBarActivity implements
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
+    private Adapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +77,7 @@ public class ArticleListActivity extends ActionBarActivity implements
         if (savedInstanceState == null) {
             refresh();
         }
+
     }
 
     private void refresh() {
@@ -118,10 +120,12 @@ public class ArticleListActivity extends ActionBarActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        Adapter adapter = new Adapter(cursor);
+         adapter = new Adapter(cursor);
         adapter.setHasStableIds(true);
 
         mRecyclerView.setAdapter(adapter);
+
+
         int columnCount = 1;
 //                getResources().getInteger(R.integer.list_column_count);
         StaggeredGridLayoutManager sglm =
@@ -132,6 +136,7 @@ public class ArticleListActivity extends ActionBarActivity implements
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mRecyclerView.setAdapter(null);
+
     }
 
     private class Adapter extends RecyclerView.Adapter<ViewHolder> {
@@ -214,4 +219,6 @@ public class ArticleListActivity extends ActionBarActivity implements
             ButterKnife.bind(this,view);
         }
     }
+
+
 }
