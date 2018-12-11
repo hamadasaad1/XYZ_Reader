@@ -7,11 +7,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,13 +55,15 @@ import butterknife.ButterKnife;
  * touched, lead to a {@link ArticleDetailActivity} representing item details. On tablets, the
  * activity presents a grid of items as cards.
  */
-public class ArticleListActivity extends ActionBarActivity implements
+public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = ArticleListActivity.class.toString();
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.recycler_view) RecyclerView mRecyclerView;
+    @BindView(R.id.coordinatorLayout)
+    CoordinatorLayout coordinatorLayout;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
@@ -78,6 +86,30 @@ public class ArticleListActivity extends ActionBarActivity implements
             refresh();
         }
 
+      showSnackbar();
+
+    }
+
+    private void showSnackbar(){
+        if (!isOnline()){
+
+            Snackbar snackbar = Snackbar
+                    .make(coordinatorLayout, "No internet connection!", Snackbar.LENGTH_LONG)
+                    .setAction("RETRY", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                        }
+                    });
+
+            // Changing message text color
+            snackbar.setActionTextColor(Color.RED);
+
+            // Changing action button text color
+            View sbView = snackbar.getView();
+            TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+            textView.setTextColor(Color.YELLOW);
+            snackbar.show();
+        }
     }
 
     private void refresh() {
@@ -95,6 +127,7 @@ public class ArticleListActivity extends ActionBarActivity implements
     protected void onStop() {
         super.onStop();
         unregisterReceiver(mRefreshingReceiver);
+
     }
     
     private boolean mIsRefreshing = false;
@@ -110,7 +143,13 @@ public class ArticleListActivity extends ActionBarActivity implements
     };
 
     private void updateRefreshingUI() {
-        mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
+        if (! isOnline()){
+            showSnackbar();
+        }else {
+            mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
+        }
+
+
     }
 
     @Override
@@ -221,4 +260,20 @@ public class ArticleListActivity extends ActionBarActivity implements
     }
 
 
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+            NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            NetworkInfo mobileData = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            if (mobileData != null && mobileData.isConnectedOrConnecting() || wifi != null && wifi.isConnectedOrConnecting())
+                return true;
+            else return false;
+        } else {
+
+            return false;
+
+        }
+    }
 }

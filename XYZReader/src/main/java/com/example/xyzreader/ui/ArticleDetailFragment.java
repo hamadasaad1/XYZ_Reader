@@ -112,6 +112,12 @@ public class ArticleDetailFragment extends Fragment implements
         getActivityCast().setSupportActionBar(toolbar);
         getActivityCast().getSupportActionBar().setDisplayShowTitleEnabled(false);
         getActivityCast().getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().finish();
+            }
+        });
 
         mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
             @Override
